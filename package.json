@@ -1,0 +1,26 @@
+{
+  "name": "prueba-mocha",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcarrerz89/prueba-mocha.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jcarrerz89/prueba-mocha/issues"
+  },
+  "homepage": "https://github.com/jcarrerz89/prueba-mocha#readme",
+  "dependencies": {
+    "botbuilder": "^3.14.1",
+    "botbuilder-cognitiveservices": "^1.1.0",
+    "dotenv": "^4.0.0",
+    "mocha": "^5.1.1",
+    "restify": "^4.3.3"
+  }
+}
