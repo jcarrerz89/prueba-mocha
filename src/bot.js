@@ -3,7 +3,6 @@ var builder = require('botbuilder');
 var dotenv = require('dotenv');
 var cognitiveservices = require('botbuilder-cognitiveservices');
 
-
 // Levantar restify
 var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3979, function () {
@@ -21,56 +20,55 @@ var bot = new builder.UniversalBot(connector);
 server.post('/api/messages', connector.listen());
 
 // Para utilizar variables de entorno
-dotenv.config();
+dotenv.config(); 
 
 let luisApp = process.env.LUIS_APP;
 let luisKey = process.env.LUIS_KEY;
-
-let qnaId = process.env.QNA_ID;
-let qnaKey = process.env.QNA_KEY;
-
+let knowledgeBaseId = process.env.QNA_ID;
+let subscriptionKey = process.env.QNA_KEY;
 
 // Crear un procesador LUIS que apunte a nuestro modelo en el root (/)
 var model = `https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/${luisApp}?subscription-key=${luisKey}&timezoneOffset=0.0&verbose=true`;
 
 var recognizer = new builder.LuisRecognizer(model);
 var dialog = new builder.IntentDialog({ recognizers: [recognizer] });
+
 bot.dialog('/', dialog);
-
-var qnaRecognizer = new cognitiveservices.QnAMakerRecognizer({
-    knowledgeBaseId: qnaId
-    ,subscriptionKey: qnaKey
-});
-
 
 // Esta función se ejecuta cuando el Intent == ordenarTaxi
 dialog.matches('ordenarTaxi', [
     function (session, args, next) {
-        // Extraer las entidades reconocidas por LUIS
-        console.log( JSON.stringify(args) );
-        var barrios = builder.EntityRecognizer.findAllEntities(args.entities, 'lugar');
+        console.log( "********** Ordenar Taxi ********** " + JSON.stringify(args));
+        builder.Prompts.text(session, '¿A dónde lo envío?');
+    },
+    function(session, args) {
+        
+        console.log(JSON.stringify(args));
+        session.send(`Enviando taxi a **${args.response}**`)
+    }
+]);
 
-        if (barrios.length > 0) {
-            let msj = 'Enviando un taxi';
-            msj += ` de **${barrios[0].entity}**`;
-
-            if(barrios.length > 1) {
-                msj += ` a **${barrios[1].entity}**`;
-            }
-
-            session.send(msj);
-        }
-        else {
+dialog.matches('saludar', [
+    function (session) {
+        session.send('Hola! ¿Necesitas un taxi?');
+    },
+    function(session, results) {
+        if(results.response == "si"){
             session.send('¿A dónde lo envío?');
+            session.beginDialog("/ordenarTaxi");
+        } else{
+
         }
     }
 ]);
 
 dialog.matches('cancelarTaxi', [
     function (session, args, next) {
-        session.send('Ok, cancelaré tu taxi.')
+        session.send('Ok, cancelaré tu taxi.');
     }
 ]);
 
 //Este es el Default, cuando LUIS no entendió la consulta.
-dialog.onDefault(builder.DialogAction.send("No entendí. Me lo decís de nuevo pero de otra manera, por favor?"));
+dialog.onDefault(
+    builder.DialogAction.send("No entendí. Dimelo de nuevo pero de otra manera por favor...")
+);

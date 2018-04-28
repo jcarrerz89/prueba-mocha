@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "test-watch": "nodemon --exec 'npm test'"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   "dependencies": {
     "botbuilder": "^3.14.1",
     "botbuilder-cognitiveservices": "^1.1.0",
+    "chai": "^4.1.2",
     "dotenv": "^4.0.0",
     "mocha": "^5.1.1",
     "restify": "^4.3.3"
